@@ -1,6 +1,5 @@
 import { CryptoEngine } from "./crypto-engine.js";
 import { SteganographyEngine } from "./steganography.js";
-import { CipherEngine } from "./ciphers.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initMatrixRain();
@@ -37,11 +36,10 @@ function initMatrixRain() {
   });
 
   function draw() {
-    // Semi-transparent black to leave trail
     ctx.fillStyle = "rgba(10, 14, 23, 0.08)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#00f3ff1a"; // Neon Cyan subtle matrix
+    ctx.fillStyle = "#00f3ff1a";
     ctx.font = `${fontSize}px monospace`;
 
     for (let i = 0; i < drops.length; i++) {
@@ -90,10 +88,6 @@ function initAESMode() {
   const aesPass = document.getElementById("aes-pass");
   const aesOutput = document.getElementById("aes-output");
 
-  const aesPassStrength = document.getElementById("pass-strength-bar");
-  const aesPassText = document.getElementById("pass-strength-text");
-
-  // Passphrase strength meter
   if (aesPass) {
     aesPass.addEventListener("input", () => {
       const pass = aesPass.value;
@@ -102,7 +96,6 @@ function initAESMode() {
     });
   }
 
-  // Encrypt Button
   if (aesEncryptBtn) {
     aesEncryptBtn.addEventListener("click", async () => {
       const text = aesInput.value.trim();
@@ -116,7 +109,6 @@ function initAESMode() {
         aesOutput.value = ciphertext;
         showToast("Message encrypted with AES-256-GCM!", "success");
 
-        // Update Shareable Link
         const shareUrl = `${window.location.origin}${window.location.pathname}#payload=${encodeURIComponent(ciphertext)}`;
         const shareInput = document.getElementById("aes-share-url");
         if (shareInput) shareInput.value = shareUrl;
@@ -129,7 +121,6 @@ function initAESMode() {
     });
   }
 
-  // Decrypt Button
   if (aesDecryptBtn) {
     aesDecryptBtn.addEventListener("click", async () => {
       const ciphertext = aesInput.value.trim();
@@ -151,15 +142,12 @@ function initAESMode() {
     });
   }
 
-  // Quick Action Buttons (Copy, Download, QR Code)
   setupOutputActions("aes");
 }
 
 /* ==========================================================================
    4. Image Steganography Handlers
    ========================================================================== */
-let selectedStegoFile = null;
-
 function initSteganographyMode() {
   const fileInput = document.getElementById("stego-file");
   const dropArea = document.getElementById("stego-drop-area");
@@ -198,18 +186,17 @@ function initSteganographyMode() {
       showToast("Please upload an image file (PNG/JPG)", "error");
       return;
     }
-    selectedStegoFile = file;
     const reader = new FileReader();
     reader.onload = (e) => {
       imgPreview.src = e.target.result;
       imgPreview.style.display = "block";
-      dropArea.querySelector(".drop-prompt").style.display = "none";
+      const promptEl = dropArea.querySelector(".drop-prompt");
+      if (promptEl) promptEl.style.display = "none";
       showToast("Image loaded successfully!", "info");
     };
     reader.readAsDataURL(file);
   }
 
-  // Encode Text into Image
   if (stegoEncodeBtn) {
     stegoEncodeBtn.addEventListener("click", async () => {
       if (!imgPreview.src || imgPreview.style.display === "none") {
@@ -233,7 +220,6 @@ function initSteganographyMode() {
     });
   }
 
-  // Decode Text from Image
   if (stegoDecodeBtn) {
     stegoDecodeBtn.addEventListener("click", async () => {
       if (!imgPreview.src || imgPreview.style.display === "none") {
@@ -256,7 +242,6 @@ function initSteganographyMode() {
     });
   }
 
-  // Download Stego Image
   const downloadStegoBtn = document.getElementById("download-stego-img");
   if (downloadStegoBtn) {
     downloadStegoBtn.addEventListener("click", () => {
@@ -269,12 +254,22 @@ function initSteganographyMode() {
       }
     });
   }
+
+  const stegoCopyBtn = document.getElementById("stego-copy-btn");
+  if (stegoCopyBtn && stegoOutputText) {
+    stegoCopyBtn.addEventListener("click", () => {
+      if (!stegoOutputText.value) {
+        showToast("Nothing to copy!", "error");
+        return;
+      }
+      navigator.clipboard.writeText(stegoOutputText.value);
+      showToast("Copied to clipboard!", "success");
+    });
+  }
 }
 
-
-
 /* ==========================================================================
-   7. Cryptographic Key Generator
+   5. Cryptographic Password Generator
    ========================================================================== */
 function initKeyGenerator() {
   const lenSlider = document.getElementById("gen-length");
@@ -307,7 +302,6 @@ function initKeyGenerator() {
         return;
       }
 
-      // Secure Random Array Generation
       const randomValues = new Uint32Array(length);
       window.crypto.getRandomValues(randomValues);
 
@@ -321,11 +315,21 @@ function initKeyGenerator() {
     });
   }
 
-  setupOutputActions("gen-key");
+  const genKeyCopyBtn = document.getElementById("gen-key-copy-btn");
+  if (genKeyCopyBtn && keyDisplay) {
+    genKeyCopyBtn.addEventListener("click", () => {
+      if (!keyDisplay.value) {
+        showToast("Generate a key first!", "error");
+        return;
+      }
+      navigator.clipboard.writeText(keyDisplay.value);
+      showToast("Generated key copied to clipboard!", "success");
+    });
+  }
 }
 
 /* ==========================================================================
-   8. Matrix Glitch Text Decrypt Effect
+   6. Matrix Glitch Text Decrypt Effect
    ========================================================================== */
 function glitchRevealText(element, finalString) {
   const glyphs = "!@#$%^&*()_+-=[]{}|;:,.<>?/10XyZ";
@@ -353,7 +357,7 @@ function glitchRevealText(element, finalString) {
 }
 
 /* ==========================================================================
-   9. Password Strength Evaluator
+   7. Password Strength Evaluator
    ========================================================================== */
 function evaluatePasswordStrength(pass) {
   if (!pass) return 0;
@@ -393,13 +397,12 @@ function updateStrengthUI(score) {
 }
 
 /* ==========================================================================
-   10. Output Utility Actions (Copy, Download, QR Code Modal)
+   8. Output Utility Actions (Copy, Download)
    ========================================================================== */
 function setupOutputActions(prefix) {
   const outputEl = document.getElementById(`${prefix}-output`);
   const copyBtn = document.getElementById(`${prefix}-copy-btn`);
   const downloadBtn = document.getElementById(`${prefix}-download-btn`);
-  const qrBtn = document.getElementById(`${prefix}-qr-btn`);
 
   if (copyBtn && outputEl) {
     copyBtn.addEventListener("click", () => {
@@ -426,13 +429,12 @@ function setupOutputActions(prefix) {
       a.click();
       URL.revokeObjectURL(url);
       showToast("File downloaded!", "success");
+    });
   }
 }
 
-
-
 /* ==========================================================================
-   11. URL Hash Payload Auto-Detector
+   9. URL Hash Payload Auto-Detector
    ========================================================================== */
 function checkURLPayload() {
   const hash = window.location.hash;
@@ -445,7 +447,6 @@ function checkURLPayload() {
       aesInput.value = payload;
       showToast("Encrypted link payload loaded! Enter passphrase to decrypt.", "info");
 
-      // Switch to AES tab
       const aesTabBtn = document.querySelector('[data-tab="tab-aes"]');
       if (aesTabBtn) aesTabBtn.click();
 
@@ -455,7 +456,7 @@ function checkURLPayload() {
 }
 
 /* ==========================================================================
-   12. Toast Notification System
+   10. Toast Notification System
    ========================================================================== */
 function showToast(message, type = "info") {
   const container = document.getElementById("toast-container");
