@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Msg Secure - Next-Gen Message Encryption & Steganography Vault</title>
+  <meta name="description" content="Ultra-secure 100% client-side message encryption tool with AES-256-GCM, Image Steganography, and Strong Password Generator. Zero-Knowledge security.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+</head>
+<body>
+
+  <!-- Matrix Digital Rain Canvas -->
+  <canvas id="matrix-canvas"></canvas>
+
+  <div class="app-container">
+
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="logo-wrapper">
+        <div class="logo-icon">🛡️</div>
+        <h1 class="logo-title">MSG SECURE</h1>
+      </div>
+      <p class="logo-tagline">
+        End-to-End Cryptographic Vault & Steganography Suite
+        <span class="badge-zero">100% Local Client-Side</span>
+      </p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tab-nav" role="tablist">
+      <button class="tab-btn active" data-tab="tab-aes">
+        <span>🔒</span> Text Encrypt / Decrypt
+      </button>
+      <button class="tab-btn" data-tab="tab-stego">
+        <span>🖼️</span> Hide Text in Image
+      </button>
+      <button class="tab-btn" data-tab="tab-generator">
+        <span>🔑</span> Password Generator
+      </button>
+    </nav>
+
+    <!-- TAB 1: AES-256-GCM MODE -->
+    <div id="tab-aes" class="tab-pane active">
+      <div class="crypto-grid">
+        
+        <!-- Input Column -->
+        <div class="glass-card">
+          <h2 class="section-title"><span>✍️</span> Input Payload</h2>
+          
+          <div class="form-group">
+            <label class="form-label" for="aes-input">Secret Message or Ciphertext</label>
+            <textarea id="aes-input" class="form-control" placeholder="Type your confidential message here to encrypt, or paste encrypted payload to decrypt..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="aes-pass">Secret Passphrase / Key</label>
+            <input type="password" id="aes-pass" class="form-control" placeholder="Enter custom secret passphrase...">
+            <div class="strength-meter">
+              <div id="pass-strength-bar" class="strength-bar"></div>
+            </div>
+            <div id="pass-strength-text" class="strength-text">Passphrase Strength</div>
+          </div>
+
+          <div class="btn-group">
+            <button id="aes-encrypt-btn" class="btn btn-primary">
+              <span>🔒</span> Encrypt Message
+            </button>
+            <button id="aes-decrypt-btn" class="btn btn-success">
+              <span>🔓</span> Decrypt Message
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Column -->
+        <div class="glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 class="section-title" style="margin-bottom: 0;"><span>⚡</span> Result Output</h2>
+            <div style="display: flex; gap: 0.4rem;">
+              <button id="aes-copy-btn" class="btn-icon-only" title="Copy to Clipboard">📋</button>
+              <button id="aes-download-btn" class="btn-icon-only" title="Download Text File">💾</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="aes-output">Processed Result</label>
+            <textarea id="aes-output" class="form-control" readonly placeholder="Encrypted payload or matrix decrypted message will appear here..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="aes-share-url">Zero-Knowledge Shareable Link</label>
+            <input type="text" id="aes-share-url" class="form-control" readonly placeholder="Encrypted payload link will be generated after encryption...">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: STEGANOGRAPHY MODE -->
+    <div id="tab-stego" class="tab-pane">
+      <div class="crypto-grid">
+        
+        <!-- Input & Image Selection -->
+        <div class="glass-card">
+          <h2 class="section-title"><span>🖼️</span> Steganography Studio</h2>
+          
+          <div class="form-group">
+            <label class="form-label">Carrier Image (PNG recommended)</label>
+            <div id="stego-drop-area" class="drop-zone">
+              <input type="file" id="stego-file" accept="image/*" style="display:none;">
+              <div class="drop-prompt">
+                <div class="drop-icon">📷</div>
+                <div class="drop-title">Click or Drop Image Here</div>
+                <div class="drop-sub">PNG, JPG, WEBP supported</div>
+              </div>
+              <img id="stego-preview" class="image-preview" alt="Carrier Image Preview">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="stego-input-text">Secret Text Message</label>
+            <textarea id="stego-input-text" class="form-control" style="min-height: 90px;" placeholder="Message to hide inside the image pixels..."></textarea>
+          </div>
+
+          <div class="btn-group">
+            <button id="stego-encode-btn" class="btn btn-primary">
+              <span>🙈</span> Hide Secret in Image
+            </button>
+            <button id="stego-decode-btn" class="btn btn-success">
+              <span>🔍</span> Extract Secret from Image
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Result -->
+        <div class="glass-card">
+          <h2 class="section-title"><span>🎯</span> Extracted / Encoded Result</h2>
+          
+          <div id="stego-img-result-box" style="display: none; text-align: center;">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              Image generated! Secret message is embedded in pixel channels:
+            </p>
+            <img id="stego-output-img" style="max-width: 100%; max-height: 220px; border-radius: 10px; border: 1px solid var(--accent-cyan-glow);" alt="Output Stego Image">
+            <div style="margin-top: 1rem;">
+              <button id="download-stego-img" class="btn btn-primary" style="width: 100%;">
+                <span>💾</span> Download Image With Secret
+              </button>
+            </div>
+          </div>
+
+          <div id="stego-text-result-box" style="display: block;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <label class="form-label">Extracted Hidden Message</label>
+              <button id="stego-copy-btn" class="btn-icon-only" title="Copy Text">📋</button>
+            </div>
+            <textarea id="stego-output-text" class="form-control" readonly style="min-height: 180px;" placeholder="Extracted hidden text will be revealed here..."></textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- TAB 5: KEY GENERATOR -->
+    <div id="tab-generator" class="tab-pane">
+      <div class="glass-card" style="max-width: 650px; margin: 0 auto;">
+        <h2 class="section-title"><span>🔑</span> Strong Password & Key Generator</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+          Generate high-entropy random keys powered by standard web browser hardware RNG (`crypto.getRandomValues`).
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">Key Length: <span id="gen-length-val" style="color: var(--accent-cyan);">24</span> Characters</label>
+          <input type="range" id="gen-length" min="8" max="100" value="24" style="width: 100%; accent-color: var(--accent-cyan);">
+        </div>
+
+        <div class="checkbox-grid">
+          <label class="checkbox-label">
+            <input type="checkbox" id="gen-upper" checked> Uppercase (A-Z)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="gen-lower" checked> Lowercase (a-z)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="gen-nums" checked> Numbers (0-9)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="gen-syms" checked> Symbols (!@#$%)
+          </label>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <button id="gen-key-btn" class="btn btn-primary" style="width: 100%;">
+            <span>🎲</span> Generate Secure Key
+          </button>
+        </div>
+
+        <div class="form-group" style="margin-top: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <label class="form-label">Generated Key</label>
+            <button id="gen-key-copy-btn" class="btn-icon-only" title="Copy Key">📋</button>
+          </div>
+          <input type="text" id="gen-key-output" class="form-control" readonly placeholder="Click Generate Secure Key above..." style="font-size: 1.1rem; color: var(--accent-green); text-align: center;">
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Msg Secure &copy; 2026. Military Grade Web Crypto & Steganography Engine.</p>
+    </footer>
+
+  </div>
+
+
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Main JavaScript Modules -->
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
