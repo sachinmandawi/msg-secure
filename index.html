@@ -38,9 +38,6 @@
       <button class="tab-btn" data-tab="tab-generator">
         <span>🔑</span> Password Generator
       </button>
-      <button class="tab-btn" data-tab="tab-binaural">
-        <span>🎧</span> Binaural Beats Studio
-      </button>
     </nav>
 
     <!-- TAB 1: AES-256-GCM MODE -->
@@ -208,143 +205,9 @@
       </div>
     </div>
 
-    <!-- TAB 4: BINAURAL BEATS STUDIO -->
-    <div id="tab-binaural" class="tab-pane">
-      <div class="glass-card" style="margin-bottom: 1.5rem;">
-        
-        <!-- Studio Header & Master Play/Pause -->
-        <div class="binaural-master-bar">
-          <div>
-            <h2 class="section-title" style="margin-bottom: 0.2rem;"><span>🎧</span> Binaural Beats & Brainwave Studio</h2>
-            <p style="color: var(--text-muted); font-size: 0.85rem;">
-              Real-Time Web Audio API Synthesis. Wear headphones for optimal stereo entrainment.
-            </p>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-            <button id="binaural-play-btn" class="btn btn-primary btn-pulse-player">
-              <span id="binaural-play-icon">▶</span> <span id="binaural-play-text">Start Sound</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Real-Time Audio Canvas Visualizer -->
-        <div class="visualizer-container">
-          <canvas id="binaural-visualizer" width="900" height="130"></canvas>
-        </div>
-
-      </div>
-
-      <!-- Presets Grid -->
-      <div class="preset-grid">
-        
-        <!-- Delta -->
-        <div class="preset-card" data-carrier="150" data-beat="2.5" data-preset="delta">
-          <div class="preset-badge" style="background: rgba(157, 78, 221, 0.2); color: var(--accent-purple);">0.5 - 4 Hz</div>
-          <div class="preset-icon">😴</div>
-          <div class="preset-title">Delta Waves</div>
-          <div class="preset-desc">Deep Sleep, Physical Healing & Recovery</div>
-        </div>
-
-        <!-- Theta -->
-        <div class="preset-card" data-carrier="180" data-beat="6.0" data-preset="theta">
-          <div class="preset-badge" style="background: rgba(0, 243, 255, 0.2); color: var(--accent-cyan);">4 - 8 Hz</div>
-          <div class="preset-icon">🧘</div>
-          <div class="preset-title">Theta Waves</div>
-          <div class="preset-desc">Deep Meditation, Intuition & REM Sleep</div>
-        </div>
-
-        <!-- Alpha (Active Default) -->
-        <div class="preset-card active" data-carrier="200" data-beat="10.0" data-preset="alpha">
-          <div class="preset-badge" style="background: rgba(0, 255, 157, 0.2); color: var(--accent-green);">8 - 14 Hz</div>
-          <div class="preset-icon">😌</div>
-          <div class="preset-title">Alpha Waves</div>
-          <div class="preset-desc">Relaxed Focus, Stress Relief & Flow State</div>
-        </div>
-
-        <!-- Beta -->
-        <div class="preset-card" data-carrier="250" data-beat="20.0" data-preset="beta">
-          <div class="preset-badge" style="background: rgba(255, 165, 2, 0.2); color: #ffa502;">14 - 30 Hz</div>
-          <div class="preset-icon">🧠</div>
-          <div class="preset-title">Beta Waves</div>
-          <div class="preset-desc">Active Concentration & Problem Solving</div>
-        </div>
-
-        <!-- Gamma -->
-        <div class="preset-card" data-carrier="300" data-beat="40.0" data-preset="gamma">
-          <div class="preset-badge" style="background: rgba(255, 71, 87, 0.2); color: var(--accent-danger);">30 - 50 Hz</div>
-          <div class="preset-icon">🚀</div>
-          <div class="preset-title">Gamma Waves</div>
-          <div class="preset-desc">Peak Cognition & Memory Recall</div>
-        </div>
-
-      </div>
-
-      <!-- Controls & Ambient Mixer Grid -->
-      <div class="crypto-grid" style="margin-top: 1.5rem;">
-        
-        <!-- Synthesizer Controls -->
-        <div class="glass-card">
-          <h3 class="section-title"><span>🎛️</span> Custom Synthesizer</h3>
-
-          <div class="form-group">
-            <label class="form-label">Carrier Pitch: <span id="carrier-val" style="color: var(--accent-cyan);">200</span> Hz</label>
-            <input type="range" id="carrier-slider" min="100" max="500" value="200" style="width: 100%; accent-color: var(--accent-cyan);">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Binaural Offset (Beat): <span id="beat-val" style="color: var(--accent-green);">10.0</span> Hz</label>
-            <input type="range" id="beat-slider" min="0.5" max="50" step="0.5" value="10.0" style="width: 100%; accent-color: var(--accent-green);">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="waveform-select">Tone Waveform</label>
-            <select id="waveform-select" class="form-select">
-              <option value="sine">Pure Sine Wave (Smooth)</option>
-              <option value="triangle">Warm Triangle Wave</option>
-              <option value="sawtooth">Bright Sawtooth Wave</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Mixer & Timer Controls -->
-        <div class="glass-card">
-          <h3 class="section-title"><span>🌧️</span> Ambient Sound Mixer & Timer</h3>
-
-          <div class="form-group">
-            <label class="form-label">Master Volume: <span id="master-vol-val" style="color: var(--accent-cyan);">50</span>%</label>
-            <input type="range" id="master-vol-slider" min="0" max="100" value="50" style="width: 100%; accent-color: var(--accent-cyan);">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Soft Rain Noise (Pink): <span id="pink-vol-val" style="color: var(--accent-cyan);">0</span>%</label>
-            <input type="range" id="pink-vol-slider" min="0" max="100" value="0" style="width: 100%; accent-color: var(--accent-cyan);">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Deep Ocean Hum (Brown): <span id="brown-vol-val" style="color: var(--accent-cyan);">0</span>%</label>
-            <input type="range" id="brown-vol-slider" min="0" max="100" value="0" style="width: 100%; accent-color: var(--accent-cyan);">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="timer-select">Session Sleep Timer</label>
-            <select id="timer-select" class="form-select">
-              <option value="0">Continuous (No Timer)</option>
-              <option value="15">15 Minutes</option>
-              <option value="30">30 Minutes</option>
-              <option value="60">60 Minutes</option>
-            </select>
-            <div id="timer-countdown" style="font-size: 0.85rem; color: var(--accent-green); margin-top: 0.4rem; display: none;"></div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
     <!-- Footer -->
     <footer class="app-footer">
-      <p>Msg Secure &copy; 2026. Military Grade Web Crypto, Steganography & Binaural Beats Engine.</p>
+      <p>Msg Secure &copy; 2026. Military Grade Web Crypto & Steganography Engine.</p>
     </footer>
 
   </div>
