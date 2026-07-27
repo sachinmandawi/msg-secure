@@ -1,5 +1,10 @@
 import { CryptoEngine } from "./crypto-engine.js";
 import { SteganographyEngine } from "./steganography.js";
+import { BinauralEngine } from "./binaural-engine.js";
+import { AudioVisualizer } from "./audio-visualizer.js";
+
+const binaural = new BinauralEngine();
+let visualizer = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   initMatrixRain();
@@ -7,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initAESMode();
   initSteganographyMode();
   initKeyGenerator();
+  initBinauralStudio();
   checkURLPayload();
 });
 
@@ -73,6 +79,12 @@ function initTabNavigation() {
       btn.classList.add("active");
       const targetPane = document.getElementById(targetTab);
       if (targetPane) targetPane.classList.add("active");
+
+      // Resize visualizer canvas if switching to Binaural tab
+      if (targetTab === "tab-binaural" && visualizer && visualizer.canvas) {
+        const parentWidth = visualizer.canvas.parentElement.clientWidth;
+        visualizer.canvas.width = parentWidth || 800;
+      }
     });
   });
 }
@@ -329,7 +341,163 @@ function initKeyGenerator() {
 }
 
 /* ==========================================================================
-   6. Matrix Glitch Text Decrypt Effect
+   6. Binaural Beats & Brainwave Studio Handler
+   ========================================================================== */
+function initBinauralStudio() {
+  visualizer = new AudioVisualizer("binaural-visualizer");
+
+  const playBtn = document.getElementById("binaural-play-btn");
+  const playIcon = document.getElementById("binaural-play-icon");
+  const playText = document.getElementById("binaural-play-text");
+
+  const carrierSlider = document.getElementById("carrier-slider");
+  const carrierVal = document.getElementById("carrier-val");
+  const beatSlider = document.getElementById("beat-slider");
+  const beatVal = document.getElementById("beat-val");
+
+  const waveformSelect = document.getElementById("waveform-select");
+  const masterVolSlider = document.getElementById("master-vol-slider");
+  const masterVolVal = document.getElementById("master-vol-val");
+
+  const pinkVolSlider = document.getElementById("pink-vol-slider");
+  const pinkVolVal = document.getElementById("pink-vol-val");
+  const brownVolSlider = document.getElementById("brown-vol-slider");
+  const brownVolVal = document.getElementById("brown-vol-val");
+
+  const timerSelect = document.getElementById("timer-select");
+  const timerCountdown = document.getElementById("timer-countdown");
+
+  const presetCards = document.querySelectorAll(".preset-card");
+
+  // Play / Stop Toggle
+  if (playBtn) {
+    playBtn.addEventListener("click", () => {
+      if (binaural.isPlaying) {
+        binaural.stop();
+        if (visualizer) visualizer.stop();
+        playBtn.classList.remove("playing");
+        playIcon.textContent = "▶";
+        playText.textContent = "Start Sound";
+        showToast("Binaural Beats Stopped", "info");
+      } else {
+        binaural.start();
+        if (visualizer && binaural.analyser) visualizer.start(binaural.analyser);
+        playBtn.classList.add("playing");
+        playIcon.textContent = "⏸";
+        playText.textContent = "Pause Sound";
+        showToast("Binaural Beats Playing! Use headphones for stereo effect.", "success");
+      }
+    });
+  }
+
+  // Preset Card Clicks
+  presetCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      presetCards.forEach((c) => c.classList.remove("active"));
+      card.classList.add("active");
+
+      const carrier = parseFloat(card.dataset.carrier);
+      const beat = parseFloat(card.dataset.beat);
+      const presetName = card.dataset.preset;
+
+      carrierSlider.value = carrier;
+      carrierVal.textContent = carrier;
+
+      beatSlider.value = beat;
+      beatVal.textContent = beat.toFixed(1);
+
+      binaural.setFrequencies(carrier, beat);
+      showToast(`${presetName.toUpperCase()} Waves Selected (${beat} Hz)`, "info");
+    });
+  });
+
+  // Carrier Pitch Slider
+  if (carrierSlider) {
+    carrierSlider.addEventListener("input", () => {
+      const carrier = carrierSlider.value;
+      carrierVal.textContent = carrier;
+      binaural.setFrequencies(carrier, beatSlider.value);
+    });
+  }
+
+  // Beat Offset Slider
+  if (beatSlider) {
+    beatSlider.addEventListener("input", () => {
+      const beat = parseFloat(beatSlider.value);
+      beatVal.textContent = beat.toFixed(1);
+      binaural.setFrequencies(carrierSlider.value, beat);
+    });
+  }
+
+  // Waveform Selector
+  if (waveformSelect) {
+    waveformSelect.addEventListener("change", () => {
+      binaural.setWaveform(waveformSelect.value);
+    });
+  }
+
+  // Master Volume Slider
+  if (masterVolSlider) {
+    masterVolSlider.addEventListener("input", () => {
+      const volPercent = masterVolSlider.value;
+      masterVolVal.textContent = volPercent;
+      binaural.setMasterVolume(volPercent / 100);
+    });
+  }
+
+  // Ambient Pink Noise (Rain) Slider
+  if (pinkVolSlider) {
+    pinkVolSlider.addEventListener("input", () => {
+      const volPercent = pinkVolSlider.value;
+      pinkVolVal.textContent = volPercent;
+      binaural.setAmbientVolume("pink", (volPercent / 100) * 0.4);
+    });
+  }
+
+  // Ambient Brown Noise (Ocean) Slider
+  if (brownVolSlider) {
+    brownVolSlider.addEventListener("input", () => {
+      const volPercent = brownVolSlider.value;
+      brownVolVal.textContent = volPercent;
+      binaural.setAmbientVolume("brown", (volPercent / 100) * 0.4);
+    });
+  }
+
+  // Session Timer Selector
+  if (timerSelect) {
+    timerSelect.addEventListener("change", () => {
+      const minutes = parseInt(timerSelect.value) || 0;
+      if (minutes > 0) {
+        timerCountdown.style.display = "block";
+        binaural.startTimer(
+          minutes,
+          (secs) => {
+            const m = Math.floor(secs / 60);
+            const s = secs % 60;
+            timerCountdown.textContent = `⏱️ Session Timer: ${m}:${s < 10 ? "0" : ""}${s} remaining`;
+          },
+          () => {
+            timerCountdown.style.display = "none";
+            if (playBtn) {
+              playBtn.classList.remove("playing");
+              playIcon.textContent = "▶";
+              playText.textContent = "Start Sound";
+            }
+            if (visualizer) visualizer.stop();
+            showToast("Sleep timer completed. Audio stopped.", "info");
+          }
+        );
+        showToast(`Timer set for ${minutes} minutes`, "info");
+      } else {
+        binaural.stopTimer();
+        timerCountdown.style.display = "none";
+      }
+    });
+  }
+}
+
+/* ==========================================================================
+   7. Matrix Glitch Text Decrypt Effect
    ========================================================================== */
 function glitchRevealText(element, finalString) {
   const glyphs = "!@#$%^&*()_+-=[]{}|;:,.<>?/10XyZ";
@@ -357,7 +525,7 @@ function glitchRevealText(element, finalString) {
 }
 
 /* ==========================================================================
-   7. Password Strength Evaluator
+   8. Password Strength Evaluator
    ========================================================================== */
 function evaluatePasswordStrength(pass) {
   if (!pass) return 0;
@@ -397,7 +565,7 @@ function updateStrengthUI(score) {
 }
 
 /* ==========================================================================
-   8. Output Utility Actions (Copy, Download)
+   9. Output Utility Actions (Copy, Download)
    ========================================================================== */
 function setupOutputActions(prefix) {
   const outputEl = document.getElementById(`${prefix}-output`);
@@ -434,7 +602,7 @@ function setupOutputActions(prefix) {
 }
 
 /* ==========================================================================
-   9. URL Hash Payload Auto-Detector
+   10. URL Hash Payload Auto-Detector
    ========================================================================== */
 function checkURLPayload() {
   const hash = window.location.hash;
@@ -456,7 +624,7 @@ function checkURLPayload() {
 }
 
 /* ==========================================================================
-   10. Toast Notification System
+   11. Toast Notification System
    ========================================================================== */
 function showToast(message, type = "info") {
   const container = document.getElementById("toast-container");

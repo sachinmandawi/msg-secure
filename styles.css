@@ -162,7 +162,7 @@ body {
 .tab-btn {
   flex: 1 0 auto;
   min-width: 120px;
-  min-height: 44px; /* Apple minimum touch target height */
+  min-height: 44px;
   background: transparent;
   border: none;
   color: var(--text-muted);
@@ -230,7 +230,6 @@ body {
   gap: 1.5rem;
 }
 
-/* Responsive Grid Breakpoints */
 @media (max-width: 850px) {
   .crypto-grid {
     grid-template-columns: 1fr;
@@ -271,11 +270,9 @@ body {
   padding: 0.85rem 1rem;
   color: var(--text-main);
   font-family: var(--font-mono);
-  /* 16px minimum font size prevents iOS browser auto-zooming on focus */
   font-size: 16px;
   outline: none;
   transition: var(--transition);
-
   -webkit-appearance: none;
   appearance: none;
 }
@@ -328,7 +325,7 @@ textarea.form-control {
 
 .btn {
   flex: 1;
-  min-height: 48px; /* 48px touch height for comfortable mobile tapping */
+  min-height: 48px;
   padding: 0.75rem 1.2rem;
   border-radius: var(--radius-md);
   font-family: var(--font-sans);
@@ -400,7 +397,7 @@ textarea.form-control {
   background: rgba(0, 243, 255, 0.12);
 }
 
-/* Steganography Drop Zone for Touch & Mouse */
+/* Steganography Drop Zone */
 .drop-zone {
   border: 2px dashed rgba(0, 243, 255, 0.35);
   border-radius: var(--radius-lg);
@@ -444,7 +441,105 @@ textarea.form-control {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
-/* Key Generator Checkbox Grid */
+/* ==========================================================================
+   Binaural Beats Studio Styling
+   ========================================================================== */
+.binaural-master-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-pulse-player.playing {
+  background: linear-gradient(135deg, var(--accent-green), #00b894) !important;
+  color: #050b14 !important;
+  animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 15px rgba(0, 255, 157, 0.4); }
+  50% { box-shadow: 0 0 30px rgba(0, 255, 157, 0.8); }
+  100% { box-shadow: 0 0 15px rgba(0, 255, 157, 0.4); }
+}
+
+.visualizer-container {
+  width: 100%;
+  height: 130px;
+  background: rgba(5, 8, 14, 0.9);
+  border: 1px solid var(--border-color-glow);
+  border-radius: var(--radius-md);
+  margin-top: 1.25rem;
+  overflow: hidden;
+  position: relative;
+}
+
+#binaural-visualizer {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Brainwave Presets Grid */
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.preset-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  user-select: none;
+}
+
+.preset-card:hover, .preset-card.active {
+  border-color: var(--accent-cyan);
+  background: rgba(22, 32, 50, 0.85);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.preset-card.active {
+  border-width: 2px;
+}
+
+.preset-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  margin-bottom: 0.6rem;
+}
+
+.preset-icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.preset-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.2rem;
+}
+
+.preset-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* Checkbox Grid */
 .checkbox-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -459,7 +554,7 @@ textarea.form-control {
   font-size: clamp(0.82rem, 2vw, 0.88rem);
   color: var(--text-muted);
   cursor: pointer;
-  min-height: 38px; /* Touch target space */
+  min-height: 38px;
 }
 
 .checkbox-label input[type="checkbox"] {
